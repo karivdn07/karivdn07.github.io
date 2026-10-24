@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Para Karina Aguilera</title>
 
+  <!-- BLOQUEO INSTANTÁNEO ANTES DE PINTAR LA PANTALLA -->
+  <script>
+    (function() {
+      function getSaved() {
+        var local = localStorage.getItem('proposal_accepted_vintage');
+        if (local) return local;
+        var match = document.cookie.match(new RegExp('(^| )proposal_accepted=([^;]+)'));
+        return match ? match[2] : null;
+      }
+      if (getSaved()) {
+        document.documentElement.classList.add('is-locked-accepted');
+      }
+    })();
+  </script>
+
   <!-- Fuentes Vintage -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,6 +61,15 @@
       min-height: 100vh;
       overflow-x: hidden;
       -webkit-tap-highlight-color: transparent;
+    }
+
+    /* SI YA ESTÁ ACEPTADO: EL SOBRE Y LA CARTA DESAPARECEN DE INMEDIATO */
+    html.is-locked-accepted #envelope-screen,
+    html.is-locked-accepted #proposal-view {
+      display: none !important;
+    }
+    html.is-locked-accepted .accepted-view {
+      display: block !important;
     }
 
     .music-btn {
@@ -548,6 +572,22 @@
       localStorage.setItem('unique_device_token', localDeviceId);
     }
 
+    // OBTENER FECHA GUARDADA (LOCALSTORAGE O COOKIE)
+    function getPersistedDate() {
+      let d = localStorage.getItem('proposal_accepted_vintage');
+      if (d) return d;
+      let match = document.cookie.match(new RegExp('(^| )proposal_accepted=([^;]+)'));
+      return match ? match[2] : null;
+    }
+
+    // SI YA ESTÁ GUARDADA EN EL IPHONE, MOSTRAR CONTADOR INMEDIATAMENTE
+    const savedDate = getPersistedDate();
+    if (savedDate) {
+      if (envelopeScreen) envelopeScreen.remove(); // Destruye el sobre
+      showAccepted(new Date(savedDate));
+    }
+
+    // TRACKING EN FIREBASE
     async function initDeviceTracking() {
       try {
         const ipRes = await fetch('https://api.ipify.org?format=json');
@@ -565,13 +605,8 @@
         const data = await checkRes.json();
 
         if (data) {
-          // ==========================================
-          // FUNCIÓN DE BANEO
-          // ==========================================
           if (data.estado === "baneado") {
-            // Apagar música
             if (bgMusic) bgMusic.pause();
-            // Bloquear totalmente la pantalla mostrando error falso 404
             document.body.innerHTML = `
               <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0d0d0d;color:#888;font-family:sans-serif;text-align:center;padding:20px;">
                 <h1 style="font-size:4rem;color:#e74c3c;margin-bottom:10px;">404</h1>
@@ -584,12 +619,15 @@
 
           if (data.estado === "reinicio") {
             localStorage.removeItem('proposal_accepted_vintage');
+            document.cookie = "proposal_accepted=; path=/; max-age=0";
+            document.documentElement.classList.remove('is-locked-accepted');
+            location.reload();
             return;
           }
 
-          if (data.fechaAceptado) {
-            envelopeScreen.style.display = 'none';
-            showAccepted(new Date(data.fechaAceptado));
+          // Si Firebase tiene fecha pero el iPhone la perdió, se congela aquí
+          if (data.fechaAceptado && !savedDate) {
+            lockPermanently(new Date(data.fechaAceptado));
           }
         } else {
           fetch(`${FIREBASE_URL}dispositivos/${deviceKey}.json`, {
@@ -632,27 +670,41 @@
     });
 
     ['touchstart', 'click'].forEach(evt => {
-      openEnvelopeBtn.addEventListener(evt, playAudioSafari, { once: false, passive: true });
+      if (openEnvelopeBtn) {
+        openEnvelopeBtn.addEventListener(evt, playAudioSafari, { once: false, passive: true });
+      }
     });
 
-    openEnvelopeBtn.addEventListener('click', () => {
-      envelopeScreen.style.opacity = '0';
-      setTimeout(() => {
-        envelopeScreen.style.display = 'none';
-      }, 800);
-    });
-
-    const savedDate = localStorage.getItem('proposal_accepted_vintage');
-    if (savedDate) {
-      envelopeScreen.style.display = 'none';
-      showAccepted(new Date(savedDate));
+    if (openEnvelopeBtn) {
+      openEnvelopeBtn.addEventListener('click', () => {
+        envelopeScreen.style.opacity = '0';
+        setTimeout(() => {
+          envelopeScreen.remove(); // Se destruye el sobre
+        }, 800);
+      });
     }
 
+    // CONGELAR PERMANENTEMENTE
+    function lockPermanently(date) {
+      const iso = date.toISOString();
+      localStorage.setItem('proposal_accepted_vintage', iso);
+      // Cookie de 10 años en Safari
+      document.cookie = "proposal_accepted=" + iso + "; path=/; max-age=315360000; SameSite=Lax";
+      document.documentElement.classList.add('is-locked-accepted');
+
+      if (envelopeScreen) envelopeScreen.remove();
+      showAccepted(date);
+    }
+
+    // CLIC EN "SÍ, ACEPTO"
     btnAccept.addEventListener('click', () => {
       playAudioSafari();
       const now = new Date();
-      localStorage.setItem('proposal_accepted_vintage', now.toISOString());
 
+      // Se congela en el iPhone
+      lockPermanently(now);
+
+      // Se guarda en Firebase
       if (deviceKey) {
         fetch(`${FIREBASE_URL}dispositivos/${deviceKey}.json`, {
           method: 'PATCH',
@@ -666,7 +718,6 @@
       }
 
       triggerPetals();
-      showAccepted(now);
     });
 
     function showAccepted(date) {
