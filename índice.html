@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Una pregunta especial...</title>
+  
+  <!-- Fuentes bonitas de Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #faf5f0;
+      --card-bg: #ffffff;
+      --text-main: #332d2d;
+      --accent: #d46a6a;
+      --accent-hover: #b85454;
+      --letter-font: 'Caveat', cursive;
+      --title-font: 'Playfair Display', serif;
+      --body-font: 'Montserrat', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--body-font);
+      display: flex;
+      justify-content: center;
+      padding: 24px 12px;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Imagen */
+    .photo-container {
+      width: 100%;
+      height: 280px;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .photo-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Nombres */
+    h1.names {
+      font-family: var(--title-font);
+      font-size: 2.2rem;
+      color: var(--accent);
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+    }
+
+    /* Carta estilo manuscrita */
+    .letter {
+      background-color: #fffdf9;
+      border: 1px dashed #e8ded2;
+      border-radius: 12px;
+      padding: 20px;
+      font-family: var(--letter-font);
+      font-size: 1.45rem;
+      line-height: 1.5;
+      text-align: left;
+      margin: 20px 0;
+      white-space: pre-line;
+      color: #4a403a;
+    }
+
+    /* Pregunta y Botón */
+    .question-box {
+      margin-top: 25px;
+    }
+
+    .question {
+      font-family: var(--title-font);
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .btn-yes {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 14px 36px;
+      font-size: 1.2rem;
+      font-family: var(--body-font);
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(212, 106, 106, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .btn-yes:hover {
+      background-color: var(--accent-hover);
+      transform: scale(1.05);
+    }
+
+    /* Sección Final Aceptada */
+    .accepted-view {
+      display: none;
+      animation: fadeIn 1.2s ease-in-out forwards;
+    }
+
+    .phrase {
+      font-family: var(--title-font);
+      font-size: 1.6rem;
+      color: var(--accent);
+      font-style: italic;
+      margin: 15px 0 20px;
+    }
+
+    .date-badge {
+      display: inline-block;
+      background: #fdf2f2;
+      color: var(--accent);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    /* Contador */
+    .counter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 20px 0;
+    }
+
+    .counter-item {
+      background: #faf7f5;
+      padding: 12px 6px;
+      border-radius: 10px;
+      border: 1px solid #eee;
+    }
+
+    .counter-number {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
+
+    .counter-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+    }
+
+    /* Animación Corazones */
+    .heart {
+      position: fixed;
+      font-size: 24px;
+      user-select: none;
+      pointer-events: none;
+      animation: flyUp 3s linear forwards;
+      z-index: 100;
+    }
+
+    @keyframes flyUp {
+      0% { transform: translateY(100vh) scale(0.8); opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.3); opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- VISTA 1: La propuesta -->
+    <div id="proposal-view">
+      <!-- 1. Foto de Portada -->
+      <div class="photo-container">
+        <!-- Reemplaza el src con tu foto -->
+        <img id="cover-photo" src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop" alt="Foto de portada">
+      </div>
+
+      <!-- 2. Nombres -->
+      <h1 class="names">Lucas & Sofía</h1>
+
+      <!-- 3. Carta Personalizada -->
+      <div class="letter">
+        Querida Sofía,
+        
+        Desde el día que te conocí supe que había algo muy especial en ti. Cada momento a tu lado me hace inmensamente feliz y no me imagino un futuro donde no estés tú.
+
+        Por eso hoy quiero hacerte esta pregunta...
+      </div>
+
+      <!-- 4. Pregunta y Botón -->
+      <div class="question-box">
+        <h2 class="question">¿Quieres ser mi novia?</h2>
+        <button class="btn-yes" id="btn-accept">¡Sí, Quiero! ❤️</button>
+      </div>
+    </div>
+
+    <!-- VISTA 2: El pacto sellado y contador -->
+    <div id="accepted-view" class="accepted-view">
+      <h2 class="phrase">"Hoy es el primer día de nuestra vida"</h2>
+
+      <!-- 2da Foto Romántica -->
+      <div class="photo-container">
+        <!-- Reemplaza el src con tu segunda foto -->
+        <img id="second-photo" src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800&auto=format&fit=crop" alt="Nosotros">
+      </div>
+
+      <!-- Fecha del momento -->
+      <div class="date-badge" id="start-date-display">Cargando fecha...</div>
+
+      <!-- Contador en vivo -->
+      <div class="counter-grid">
+        <div class="counter-item">
+          <span class="counter-number" id="days">0</span>
+          <span class="counter-label">Días</span>
+        </div>
+        <div class="counter-item">
+          <span class="counter-number" id="hours">00</span>
+          <span class="counter-label">Horas</span>
+        </div>
+        <div class="counter-item">
+          <span class="counter-number" id="minutes">00</span>
+          <span class="counter-label">Min</span>
+        </div>
+        <div class="counter-item">
+          <span class="counter-number" id="seconds">00</span>
+          <span class="counter-label">Seg</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const btnAccept = document.getElementById('btn-accept');
+    const proposalView = document.getElementById('proposal-view');
+    const acceptedView = document.getElementById('accepted-view');
+    const startDateDisplay = document.getElementById('start-date-display');
+
+    // Revisar si ya se aceptó anteriormente
+    let savedDate = localStorage.getItem('proposal_accepted_date');
+
+    if (savedDate) {
+      showAcceptedView(new Date(savedDate));
+    }
+
+    btnAccept.addEventListener('click', () => {
+      const now = new Date();
+      localStorage.setItem('proposal_accepted_date', now.toISOString());
+      triggerHearts();
+      showAcceptedView(now);
+    });
+
+    function showAcceptedView(date) {
+      proposalView.style.display = 'none';
+      acceptedView.style.display = 'block';
+
+      // Formatear la fecha
+      const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      startDateDisplay.textContent = "Sellado el " + date.toLocaleDateString('es-ES', options);
+
+      // Iniciar el contador
+      updateCounter(date);
+      setInterval(() => updateCounter(date), 1000);
+    }
+
+    function updateCounter(startDate) {
+      const now = new Date();
+      const diff = now - new Date(startDate);
+
+      const seconds = Math.floor((diff / 1000) % 60);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = hours < 10 ? '0' + hours : hours;
+      document.getElementById('minutes').textContent = minutes < 10 ? '0' + minutes : minutes;
+      document.getElementById('seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+    }
+
+    // Efecto lluvia de corazones
+    function triggerHearts() {
+      for (let i = 0; i < 25; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.classList.add('heart');
+          heart.innerHTML = ['❤️', '💖', '✨', '💕'][Math.floor(Math.random() * 4)];
+          heart.style.left = Math.random() * 100 + 'vw';
+          heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+          document.body.appendChild(heart);
+
+          setTimeout(() => heart.remove(), 3000);
+        }, i * 100);
+      }
+    }
+  </script>
+</body>
+</html>
