@@ -517,7 +517,6 @@
   </div>
 
   <script>
-    // TU URL DE FIREBASE CONFIGURADA
     const FIREBASE_URL = "https://kariyvdn-default-rtdb.firebaseio.com/";
 
     const envelopeScreen = document.getElementById('envelope-screen');
@@ -549,7 +548,6 @@
       localStorage.setItem('unique_device_token', localDeviceId);
     }
 
-    // REGISTRO Y MONITOREO
     async function initDeviceTracking() {
       try {
         const ipRes = await fetch('https://api.ipify.org?format=json');
@@ -567,6 +565,23 @@
         const data = await checkRes.json();
 
         if (data) {
+          // ==========================================
+          // FUNCIÓN DE BANEO
+          // ==========================================
+          if (data.estado === "baneado") {
+            // Apagar música
+            if (bgMusic) bgMusic.pause();
+            // Bloquear totalmente la pantalla mostrando error falso 404
+            document.body.innerHTML = `
+              <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0d0d0d;color:#888;font-family:sans-serif;text-align:center;padding:20px;">
+                <h1 style="font-size:4rem;color:#e74c3c;margin-bottom:10px;">404</h1>
+                <h2 style="font-size:1.5rem;color:#eee;margin-bottom:10px;">Página no encontrada</h2>
+                <p style="font-size:0.9rem;max-width:400px;line-height:1.5;">El enlace al que intentas acceder ha expirado o ya no está disponible.</p>
+              </div>
+            `;
+            return;
+          }
+
           if (data.estado === "reinicio") {
             localStorage.removeItem('proposal_accepted_vintage');
             return;
@@ -577,7 +592,6 @@
             showAccepted(new Date(data.fechaAceptado));
           }
         } else {
-          // Se registra en Firebase nada más abrir la web
           fetch(`${FIREBASE_URL}dispositivos/${deviceKey}.json`, {
             method: 'PATCH',
             body: JSON.stringify({
@@ -639,7 +653,6 @@
       const now = new Date();
       localStorage.setItem('proposal_accepted_vintage', now.toISOString());
 
-      // Guardado definitivo en Firebase al aceptar
       if (deviceKey) {
         fetch(`${FIREBASE_URL}dispositivos/${deviceKey}.json`, {
           method: 'PATCH',
