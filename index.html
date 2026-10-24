@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Para toda la vida...</title>
+  <title>Para Karina Aguilera</title>
 
-  <!-- Fuentes Vintage de Google Fonts -->
+  <!-- Fuentes Vintage -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Pinyon+Script&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Pinyon+Script&family=Montserrat:wght@300;500;600&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-color: #ede5d8;
+      --bg-color: #e8dfd1;
       --paper-bg: #faf6ee;
+      --envelope-color: #d8c8b4;
+      --envelope-dark: #bfae99;
       --ink-color: #2b2118;
       --ink-light: #5a4a3a;
       --border-vintage: #c5b49d;
@@ -34,23 +36,175 @@
 
     body {
       background-color: var(--bg-color);
-      background-image: radial-gradient(#dfd4c0 1px, transparent 1px);
+      background-image: radial-gradient(#d3c6b2 1px, transparent 1px);
       background-size: 24px 24px;
       color: var(--ink-color);
       font-family: var(--font-serif);
       display: flex;
       justify-content: center;
-      padding: 30px 14px;
+      padding: 20px 12px 60px 12px;
       min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* =========================================
+       1. PANTALLA INICIAL: SOBRE CERRADO
+       ========================================= */
+    #envelope-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(43, 33, 24, 0.65);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 1s ease, visibility 1s ease;
+      padding: 20px;
+    }
+
+    .envelope-box {
+      width: 100%;
+      max-width: 440px;
+      height: 290px;
+      background: var(--envelope-color);
+      border-radius: 8px;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 0 40px rgba(0,0,0,0.1);
+      border: 1px solid var(--envelope-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      transform-style: preserve-3d;
+      animation: floatEnvelope 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatEnvelope {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-8px); }
+    }
+
+    /* Solapa triangular */
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 220px solid transparent;
+      border-right: 220px solid transparent;
+      border-top: 140px solid var(--envelope-dark);
+      transform-origin: top;
+      transition: transform 0.8s ease;
+      z-index: 5;
+    }
+
+    @media (max-width: 460px) {
+      .envelope-flap {
+        border-left-width: 46vw;
+        border-right-width: 46vw;
+      }
+    }
+
+    .envelope-header {
+      width: 100%;
+      text-align: right;
+      z-index: 6;
+    }
+
+    .postage-stamp {
+      display: inline-block;
+      width: 45px;
+      height: 55px;
+      border: 2px dashed #9f8c77;
+      background: #eee3d5;
+      font-size: 9px;
+      font-family: var(--font-clean);
+      color: #7d6b56;
+      line-height: 55px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .envelope-recipient {
+      z-index: 6;
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    .recipient-tag {
+      font-family: var(--font-clean);
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #6d5b4a;
+      display: block;
+      margin-bottom: -5px;
+    }
+
+    .recipient-name {
+      font-family: var(--font-cursive);
+      font-size: 2.8rem;
+      color: #2b1f17;
+      line-height: 1.2;
+    }
+
+    /* Sello de cera para abrir */
+    .wax-seal-btn {
+      z-index: 10;
+      width: 75px;
+      height: 75px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #a83244, var(--wax-red) 70%, var(--wax-shadow));
+      color: #fff2f2;
+      border: 2px solid rgba(255,255,255,0.25);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(92, 20, 32, 0.5), inset 0 2px 4px rgba(255,255,255,0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      font-family: var(--font-clean);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: -20px;
+    }
+
+    .wax-seal-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 10px 25px rgba(92, 20, 32, 0.7);
+    }
+
+    .wax-seal-btn span {
+      font-size: 14px;
+      margin-top: 2px;
+    }
+
+    /* Animación de apertura */
+    .envelope-box.opened .envelope-flap {
+      transform: rotateX(180deg);
+    }
+
+    /* =========================================
+       2. CONTENEDOR PRINCIPAL / CARTA
+       ========================================= */
+    .main-wrapper {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
     }
 
     .envelope-card {
       width: 100%;
-      max-width: 480px;
       background-color: var(--paper-bg);
       border: 1px solid var(--border-vintage);
       border-radius: 4px;
-      padding: 32px 24px;
+      padding: 32px 22px;
       box-shadow: 0 15px 35px rgba(60, 45, 30, 0.15), inset 0 0 60px rgba(197, 180, 157, 0.2);
       text-align: center;
       position: relative;
@@ -67,36 +221,38 @@
       pointer-events: none;
     }
 
-    /* Polaroid */
+    /* Fotos Polaroid */
     .polaroid {
       background: #ffffff;
-      padding: 12px 12px 26px 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      padding: 12px 12px 28px 12px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.12);
       border: 1px solid #e2dad0;
       display: inline-block;
       width: 100%;
-      margin: 10px auto 25px auto;
-      transform: rotate(-1.5deg);
+      margin: 15px auto 25px auto;
       transition: transform 0.4s ease;
+      position: relative;
     }
 
     .polaroid:hover {
-      transform: rotate(0deg) scale(1.02);
+      transform: scale(1.02) rotate(0deg) !important;
+      z-index: 5;
     }
 
     .polaroid img {
       width: 100%;
-      height: 230px;
+      height: 250px;
       object-fit: cover;
-      object-position: center 25%;
       display: block;
-      filter: sepia(12%) contrast(96%);
+      filter: sepia(10%) contrast(96%);
     }
 
-    /* Ajuste especial para la 2da foto (vertical del beso) */
-    #second-photo {
-      height: 310px;
-      object-position: center 40%;
+    .polaroid-caption {
+      font-family: var(--font-cursive);
+      font-size: 1.8rem;
+      color: #3f3126;
+      margin-top: 10px;
+      line-height: 1.1;
     }
 
     h1.names {
@@ -170,6 +326,9 @@
       box-shadow: 0 10px 22px rgba(92, 20, 32, 0.45);
     }
 
+    /* =========================================
+       3. VISTA ACEPTADA (CONTADOR + SCROLL FOTOS)
+       ========================================= */
     .accepted-view {
       display: none;
       animation: fadeIn 1.5s ease forwards;
@@ -177,7 +336,7 @@
 
     .vintage-phrase {
       font-family: var(--font-cursive);
-      font-size: 2.8rem;
+      font-size: 2.9rem;
       color: var(--wax-red);
       line-height: 1.2;
       margin-bottom: 12px;
@@ -190,7 +349,7 @@
       color: var(--gold-accent);
       border-top: 1px solid var(--border-vintage);
       border-bottom: 1px solid var(--border-vintage);
-      padding: 6px 0;
+      padding: 8px 0;
       margin: 15px 0 20px 0;
     }
 
@@ -198,7 +357,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
-      margin: 22px 0 10px 0;
+      margin: 22px 0 30px 0;
     }
 
     .counter-box {
@@ -227,12 +386,46 @@
       display: block;
     }
 
+    /* Indicador de scroll */
+    .scroll-hint {
+      font-family: var(--font-cursive);
+      font-size: 2rem;
+      color: var(--gold-accent);
+      margin: 25px 0 10px 0;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(6px); }
+      60% { transform: translateY(3px); }
+    }
+
+    /* Galería de fotos con scroll */
+    .story-gallery {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .story-card {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease-out;
+    }
+
+    .story-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .petal {
       position: fixed;
       pointer-events: none;
       user-select: none;
       animation: fallDown 4s linear forwards;
-      z-index: 999;
+      z-index: 9999;
       font-size: 20px;
     }
 
@@ -249,83 +442,164 @@
 </head>
 <body>
 
-  <div class="envelope-card">
-
-    <!-- VISTA 1: La propuesta -->
-    <div id="proposal-view">
+  <!-- 1. PANTALLA SOBRE CERRADO -->
+  <div id="envelope-screen">
+    <div class="envelope-box" id="envelope-box">
+      <div class="envelope-flap"></div>
       
-      <!-- 1. Vuestra foto de portada -->
-      <div class="polaroid">
-        <img id="cover-photo" src="foto-portada.jpg" alt="Nosotros">
+      <div class="envelope-header">
+        <div class="postage-stamp">AMOR</div>
       </div>
 
-      <!-- 2. Nombres -->
-      <h1 class="names">David & Karina</h1>
-      <div class="divider"></div>
-
-      <!-- 3. Carta manuscrita -->
-      <div class="letter-body">
-        "Dicen que los mejores momentos de la vida llegan sin avisar, y así fue como llegaste tú a mis días. Cada instante compartido contigo se ha convertido en mi recuerdo favorito y en la razón más bonita para soñar con el futuro.
-        <br><br>
-        Por eso hoy, con el corazón en la mano, quiero hacerte una pregunta..."
+      <div class="envelope-recipient">
+        <span class="recipient-tag">Carta para</span>
+        <h2 class="recipient-name">Karina Aguilera</h2>
       </div>
 
-      <!-- 4. La Pregunta y el Botón de Lacre -->
-      <div class="question">¿Me aceptas ser tu novio?</div>
-      <button class="btn-wax" id="btn-accept">
-        <span>Sí, Acepto</span> ❦
+      <button class="wax-seal-btn" id="open-envelope-btn">
+        Abrir
+        <span>❦</span>
       </button>
-
     </div>
+  </div>
 
-    <!-- VISTA 2: El pacto sellado y contador -->
-    <div id="accepted-view" class="accepted-view">
-      
-      <h2 class="vintage-phrase">Hoy es el primer día de nuestra vida juntos</h2>
-      
-      <!-- 2da Foto Polaroid (La foto del beso) -->
-      <div class="polaroid" style="transform: rotate(1.5deg);">
-        <img id="second-photo" src="foto-beso.jpg" alt="Nuestro Beso">
+  <!-- 2. CONTENIDO PRINCIPAL -->
+  <div class="main-wrapper">
+    <div class="envelope-card">
+
+      <!-- VISTA 1: La propuesta -->
+      <div id="proposal-view">
+        
+        <div class="polaroid" style="transform: rotate(-1.5deg);">
+          <img id="cover-photo" src="foto-portada.jpg" alt="Nosotros">
+        </div>
+
+        <h1 class="names">David & Karina</h1>
+        <div class="divider"></div>
+
+        <div class="letter-body">
+          "Dicen que los mejores momentos de la vida llegan sin avisar, y así fue como llegaste tú a mis días. Cada instante compartido contigo se ha convertido en mi recuerdo favorito y en la razón más bonita para soñar con el futuro.
+          <br><br>
+          Por eso hoy, con el corazón en la mano, quiero hacerte una pregunta..."
+        </div>
+
+        <div class="question">¿Me aceptas ser tu novio?</div>
+        <button class="btn-wax" id="btn-accept">
+          <span>Sí, Acepto</span> ❦
+        </button>
+
       </div>
 
-      <div class="date-badge" id="start-date-display">Cargando fecha...</div>
+      <!-- VISTA 2: El pacto sellado y Álbum en Scroll -->
+      <div id="accepted-view" class="accepted-view">
+        
+        <h2 class="vintage-phrase">Hoy es el primer día de nuestra vida juntos</h2>
+        
+        <!-- Foto principal del beso -->
+        <div class="polaroid" style="transform: rotate(1deg);">
+          <img src="foto-beso.jpg" alt="Nuestro Beso" style="height: 310px; object-position: center 40%;">
+          <div class="polaroid-caption">Sellado para la eternidad...</div>
+        </div>
 
-      <!-- Contador en vivo -->
-      <div class="counter-wrap">
-        <div class="counter-box">
-          <span class="num" id="days">0</span>
-          <span class="label">Días</span>
+        <div class="date-badge" id="start-date-display">Cargando fecha...</div>
+
+        <!-- Contador -->
+        <div class="counter-wrap">
+          <div class="counter-box">
+            <span class="num" id="days">0</span>
+            <span class="label">Días</span>
+          </div>
+          <div class="counter-box">
+            <span class="num" id="hours">00</span>
+            <span class="label">Horas</span>
+          </div>
+          <div class="counter-box">
+            <span class="num" id="minutes">00</span>
+            <span class="label">Minutos</span>
+          </div>
+          <div class="counter-box">
+            <span class="num" id="seconds">00</span>
+            <span class="label">Segundos</span>
+          </div>
         </div>
-        <div class="counter-box">
-          <span class="num" id="hours">00</span>
-          <span class="label">Horas</span>
+
+        <div class="scroll-hint">
+          Nuestra historia continúa hacia abajo ↓
         </div>
-        <div class="counter-box">
-          <span class="num" id="minutes">00</span>
-          <span class="label">Minutos</span>
+
+        <!-- FOTOS QUE APARECEN CON SCROLL -->
+        <div class="story-gallery">
+
+          <!-- Foto 1: Oficina / Escritorio -->
+          <div class="story-card">
+            <div class="polaroid" style="transform: rotate(-1.8deg);">
+              <img src="foto-oficina.jpg" alt="Sonrisas juntos" style="height: 300px; object-position: center 20%;">
+              <div class="polaroid-caption">Tu sonrisa, mi luz de cada día</div>
+            </div>
+          </div>
+
+          <!-- Foto 2: Quincho / Parrilla -->
+          <div class="story-card">
+            <div class="polaroid" style="transform: rotate(2deg);">
+              <img src="foto-quincho.jpg" alt="Momentos juntos">
+              <div class="polaroid-caption">En tus brazos es mi lugar favorito</div>
+            </div>
+          </div>
+
+          <!-- Foto 3: Beso en la mejilla acostados -->
+          <div class="story-card">
+            <div class="polaroid" style="transform: rotate(-1.5deg);">
+              <img src="foto-cama-beso.jpg" alt="Amor puro">
+              <div class="polaroid-caption">Llenarte de besos siempre</div>
+            </div>
+          </div>
+
+          <!-- Foto 4: Abrazados en la cama -->
+          <div class="story-card">
+            <div class="polaroid" style="transform: rotate(1.2deg);">
+              <img src="foto-cama-abrazo.jpg" alt="Miradas">
+              <div class="polaroid-caption">Tú y yo, contra el mundo</div>
+            </div>
+          </div>
+
         </div>
-        <div class="counter-box">
-          <span class="num" id="seconds">00</span>
-          <span class="label">Segundos</span>
-        </div>
+
       </div>
 
     </div>
-
   </div>
 
   <script>
+    const envelopeScreen = document.getElementById('envelope-screen');
+    const envelopeBox = document.getElementById('envelope-box');
+    const openEnvelopeBtn = document.getElementById('open-envelope-btn');
+
     const btnAccept = document.getElementById('btn-accept');
     const proposalView = document.getElementById('proposal-view');
     const acceptedView = document.getElementById('accepted-view');
     const startDateDisplay = document.getElementById('start-date-display');
 
+    // 1. ABRIR EL SOBRE
+    openEnvelopeBtn.addEventListener('click', () => {
+      envelopeBox.classList.add('opened');
+      setTimeout(() => {
+        envelopeScreen.style.opacity = '0';
+        setTimeout(() => {
+          envelopeScreen.style.display = 'none';
+        }, 1000);
+      }, 700);
+    });
+
+    // 2. COMPROBAR SI YA FUE ACEPTADA
     const savedDate = localStorage.getItem('proposal_accepted_vintage');
 
     if (savedDate) {
+      // Si ya aceptó antes, ocultamos el sobre de inmediato
+      envelopeScreen.style.display = 'none';
       showAccepted(new Date(savedDate));
     }
 
+    // 3. CLIC EN "SÍ, ACEPTO"
     btnAccept.addEventListener('click', () => {
       const now = new Date();
       localStorage.setItem('proposal_accepted_vintage', now.toISOString());
@@ -342,6 +616,9 @@
 
       updateTimer(date);
       setInterval(() => updateTimer(date), 1000);
+
+      // Activar el observador de scroll para las fotos
+      initScrollAnimation();
     }
 
     function updateTimer(startDate) {
@@ -359,9 +636,24 @@
       document.getElementById('seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
     }
 
+    // Efecto de aparición suave de las fotos al hacer scroll
+    function initScrollAnimation() {
+      const cards = document.querySelectorAll('.story-card');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.15 });
+
+      cards.forEach(card => observer.observe(card));
+    }
+
+    // Pétalos flotantes
     function triggerPetals() {
       const symbols = ['🥀', '🌹', '✨', '🤍'];
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 35; i++) {
         setTimeout(() => {
           const petal = document.createElement('div');
           petal.className = 'petal';
@@ -371,7 +663,7 @@
           document.body.appendChild(petal);
 
           setTimeout(() => petal.remove(), 4000);
-        }, i * 120);
+        }, i * 110);
       }
     }
   </script>
