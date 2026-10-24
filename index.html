@@ -517,11 +517,8 @@
   </div>
 
   <script>
-    // ==============================================================
-    // CONFIGURA AQUÍ TU URL DE FIREBASE (terminada en /):
-    // Ejemplo: "https://propuesta-karina-default-rtdb.firebaseio.com/"
-    // ==============================================================
-    const FIREBASE_URL = "https://propuesta-karina-default-rtdb.firebaseio.com/";
+    // TU URL DE FIREBASE CONFIGURADA
+    const FIREBASE_URL = "https://kariyvdn-default-rtdb.firebaseio.com/";
 
     const envelopeScreen = document.getElementById('envelope-screen');
     const openEnvelopeBtn = document.getElementById('open-envelope-btn');
@@ -536,28 +533,25 @@
     let currentIP = "desconocida";
     let deviceKey = "";
 
-    // Obtener información del dispositivo (iPhone, Android, PC...)
     function getDeviceName() {
       const ua = navigator.userAgent;
       if (/iPhone/.test(ua)) return "iPhone";
       if (/iPad/.test(ua)) return "iPad";
       if (/Android/.test(ua)) return "Android";
-      if (/Windows/.test(ua)) return "Windows PC";
+      if (/Windows/.test(ua)) return "Windows_PC";
       if (/Macintosh/.test(ua)) return "Mac";
-      return "Dispositivo Móvil/PC";
+      return "Dispositivo";
     }
 
-    // Identificador único por navegador
     let localDeviceId = localStorage.getItem('unique_device_token');
     if (!localDeviceId) {
       localDeviceId = 'dev_' + Math.random().toString(36).substring(2, 9);
       localStorage.setItem('unique_device_token', localDeviceId);
     }
 
-    // REGISTRO EN LA BASE DE DATOS Y COMPROBACIÓN
+    // REGISTRO Y MONITOREO
     async function initDeviceTracking() {
       try {
-        // Obtener IP pública real
         const ipRes = await fetch('https://api.ipify.org?format=json');
         const ipData = await ipRes.json();
         currentIP = ipData.ip;
@@ -565,34 +559,29 @@
         currentIP = "ip_oculta";
       }
 
-      // Clave segura para la base de datos (reemplaza puntos de la IP)
       const safeIP = currentIP.replace(/\./g, '_');
       deviceKey = `${getDeviceName()}_${safeIP}_${localDeviceId}`;
 
-      // Consultar si este dispositivo ya tiene un registro
       try {
         const checkRes = await fetch(`${FIREBASE_URL}dispositivos/${deviceKey}.json`);
         const data = await checkRes.json();
 
         if (data) {
-          // Si tú desde Firebase pusiste el estado en "reinicio", se borra y vuelve al sobre
           if (data.estado === "reinicio") {
             localStorage.removeItem('proposal_accepted_vintage');
             return;
           }
 
-          // Si ya había aceptado previamente, mostramos el contador directamente
           if (data.fechaAceptado) {
             envelopeScreen.style.display = 'none';
             showAccepted(new Date(data.fechaAceptado));
           }
         } else {
-          // Si es la primera vez que entra, lo registramos como "visita"
+          // Se registra en Firebase nada más abrir la web
           fetch(`${FIREBASE_URL}dispositivos/${deviceKey}.json`, {
             method: 'PATCH',
             body: JSON.stringify({
               ip: currentIP,
-              dispositivo: navigator.userAgent,
               tipo: getDeviceName(),
               primeraVisita: new Date().toISOString(),
               estado: "esperando_respuesta"
@@ -600,13 +589,12 @@
           });
         }
       } catch (err) {
-        console.log("Modo offline / local storage:", err);
+        console.log("Firebase status:", err);
       }
     }
 
     initDeviceTracking();
 
-    // Reproducción de audio Safari/iOS
     function playAudioSafari() {
       if (!isPlaying) {
         bgMusic.play().then(() => {
@@ -633,7 +621,6 @@
       openEnvelopeBtn.addEventListener(evt, playAudioSafari, { once: false, passive: true });
     });
 
-    // 1. ABRIR SOBRE
     openEnvelopeBtn.addEventListener('click', () => {
       envelopeScreen.style.opacity = '0';
       setTimeout(() => {
@@ -641,20 +628,18 @@
       }, 800);
     });
 
-    // Comprobación secundaria en localStorage
     const savedDate = localStorage.getItem('proposal_accepted_vintage');
     if (savedDate) {
       envelopeScreen.style.display = 'none';
       showAccepted(new Date(savedDate));
     }
 
-    // 2. CLIC EN "SÍ, ACEPTO"
     btnAccept.addEventListener('click', () => {
       playAudioSafari();
       const now = new Date();
       localStorage.setItem('proposal_accepted_vintage', now.toISOString());
 
-      // Guardar en la base de datos de Firebase para siempre
+      // Guardado definitivo en Firebase al aceptar
       if (deviceKey) {
         fetch(`${FIREBASE_URL}dispositivos/${deviceKey}.json`, {
           method: 'PATCH',
