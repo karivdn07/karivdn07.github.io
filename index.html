@@ -15,7 +15,6 @@
       --bg-color: #e8dfd1;
       --paper-bg: #faf6ee;
       --envelope-base: #d2c1aa;
-      --envelope-dark: #bfa990;
       --envelope-shadow: rgba(40, 28, 18, 0.25);
       --ink-color: #2b2118;
       --ink-light: #5a4a3a;
@@ -48,6 +47,31 @@
       overflow-x: hidden;
     }
 
+    /* Botón flotante para pausar/reanudar música */
+    .music-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: rgba(250, 246, 238, 0.85);
+      border: 1px solid var(--border-vintage);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 100;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .music-btn:hover {
+      transform: scale(1.08);
+      background: #faf6ee;
+    }
+
     /* =========================================
        1. PANTALLA SOBRE (FONDO NEGRO Y ESTRUCTURA REAL)
        ========================================= */
@@ -75,8 +99,6 @@
       border: 1px solid #aa957d;
     }
 
-    /* Pliegues realistas del sobre mediante clip-path */
-    /* Pliegue izquierdo */
     .fold-left {
       position: absolute;
       top: 0;
@@ -89,7 +111,6 @@
       z-index: 2;
     }
 
-    /* Pliegue derecho */
     .fold-right {
       position: absolute;
       top: 0;
@@ -102,7 +123,6 @@
       z-index: 2;
     }
 
-    /* Pliegue inferior */
     .fold-bottom {
       position: absolute;
       bottom: 0;
@@ -115,7 +135,6 @@
       z-index: 3;
     }
 
-    /* Solapa triangular superior */
     .fold-top {
       position: absolute;
       top: 0;
@@ -128,7 +147,7 @@
       z-index: 4;
     }
 
-    /* Sello / Botón ABRIR (Centrado exactamente) */
+    /* Sello / Botón ABRIR */
     .wax-seal-btn {
       position: absolute;
       top: 50%;
@@ -165,7 +184,6 @@
       margin-top: 1px;
     }
 
-    /* Destinataria: Parte inferior del sobre */
     .envelope-recipient {
       position: absolute;
       bottom: 12px;
@@ -225,7 +243,6 @@
       pointer-events: none;
     }
 
-    /* Fotos Polaroid limpias sin textos */
     .polaroid {
       background: #ffffff;
       padding: 12px 12px 22px 12px;
@@ -321,7 +338,7 @@
     }
 
     /* =========================================
-       3. VISTA ACEPTADA (ORDEN SOLICITADO)
+       3. VISTA ACEPTADA
        ========================================= */
     .accepted-view {
       display: none;
@@ -336,7 +353,6 @@
       margin-bottom: 12px;
     }
 
-    /* Fecha limpia: solo fecha, año y hora */
     .date-badge {
       font-family: var(--font-serif);
       font-size: 1.15rem;
@@ -382,7 +398,6 @@
       display: block;
     }
 
-    /* Galería limpia sin textos */
     .story-gallery {
       display: flex;
       flex-direction: column;
@@ -422,22 +437,26 @@
 </head>
 <body>
 
-  <!-- 1. PANTALLA SOBRE REALISTA (FONDO NEGRO) -->
+  <!-- ELEMENTO DE AUDIO -->
+  <audio id="bg-music" src="musica.mp3" loop preload="auto"></audio>
+
+  <!-- BOTÓN FLOTANTE PARA PAUSAR / REANUDAR -->
+  <button class="music-btn" id="music-toggle" title="Música">🎵</button>
+
+  <!-- 1. PANTALLA SOBRE (FONDO NEGRO) -->
   <div id="envelope-screen">
     <div class="envelope">
-      <!-- Pliegues físicos del sobre -->
       <div class="fold-left"></div>
       <div class="fold-right"></div>
       <div class="fold-bottom"></div>
       <div class="fold-top"></div>
 
-      <!-- Botón en el centro mismo -->
+      <!-- Al dar clic aquí empieza a sonar la música -->
       <button class="wax-seal-btn" id="open-envelope-btn">
         Abrir
         <span>❦</span>
       </button>
 
-      <!-- Texto PARA en la parte inferior -->
       <div class="envelope-recipient">
         <span class="recipient-tag">PARA</span>
         <h2 class="recipient-name">Karina Aguilera</h2>
@@ -477,7 +496,7 @@
         
         <h2 class="vintage-phrase">Hoy es el primer día de nuestra vida juntos</h2>
         
-        <!-- 1ra Foto: Foto del beso (limpia) -->
+        <!-- Foto principal del beso -->
         <div class="polaroid" style="transform: rotate(1deg);">
           <img src="foto-beso.jpg" alt="Nuestro Beso" style="height: 310px; object-position: center 40%;">
         </div>
@@ -505,7 +524,7 @@
           </div>
         </div>
 
-        <!-- FOTOS QUE APARECEN CON SCROLL (TODAS LIMPIAS) -->
+        <!-- FOTOS CON SCROLL (LIMPIAS) -->
         <div class="story-gallery">
 
           <div class="story-card">
@@ -548,8 +567,25 @@
     const acceptedView = document.getElementById('accepted-view');
     const startDateDisplay = document.getElementById('start-date-display');
 
-    // 1. ABRIR EL SOBRE (Desvanecimiento directo al dar clic)
+    const bgMusic = document.getElementById('bg-music');
+    const musicToggle = document.getElementById('music-toggle');
+
+    // CONTROL DE MÚSICA (Botón flotante)
+    musicToggle.addEventListener('click', () => {
+      if (bgMusic.paused) {
+        bgMusic.play();
+        musicToggle.textContent = '🎵';
+      } else {
+        bgMusic.pause();
+        musicToggle.textContent = '🔇';
+      }
+    });
+
+    // 1. ABRIR SOBRE + INICIAR MÚSICA
     openEnvelopeBtn.addEventListener('click', () => {
+      // Iniciar la música de inmediato con la interacción del usuario
+      bgMusic.play().catch(e => console.log('Esperando interacción para audio:', e));
+
       envelopeScreen.style.opacity = '0';
       setTimeout(() => {
         envelopeScreen.style.display = 'none';
@@ -576,7 +612,6 @@
       proposalView.style.display = 'none';
       acceptedView.style.display = 'block';
 
-      // Formato limpio: solo fecha, año y hora
       const dateStr = date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
       const timeStr = date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       startDateDisplay.textContent = `${dateStr} · ${timeStr} hs`;
