@@ -14,8 +14,9 @@
     :root {
       --bg-color: #e8dfd1;
       --paper-bg: #faf6ee;
-      --envelope-color: #d8c8b4;
-      --envelope-dark: #bfae99;
+      --envelope-color: #d6c4ae;
+      --envelope-dark: #bfa88f;
+      --envelope-inside: #a89279;
       --ink-color: #2b2118;
       --ink-light: #5a4a3a;
       --border-vintage: #c5b49d;
@@ -48,150 +49,183 @@
     }
 
     /* =========================================
-       1. PANTALLA INICIAL: SOBRE CERRADO
+       1. PANTALLA SOBRE: FONDO NEGRO Y ANIMACIÓN
        ========================================= */
     #envelope-screen {
       position: fixed;
       inset: 0;
-      background: rgba(43, 33, 24, 0.65);
-      backdrop-filter: blur(6px);
+      background-color: #0c0b0a; /* Fondo totalmente negro */
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      transition: opacity 1s ease, visibility 1s ease;
+      transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s ease;
       padding: 20px;
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 270px;
+      perspective: 1000px;
     }
 
     .envelope-box {
       width: 100%;
-      max-width: 440px;
-      height: 290px;
+      height: 100%;
       background: var(--envelope-color);
-      border-radius: 8px;
+      border-radius: 6px;
       position: relative;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 0 40px rgba(0,0,0,0.1);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
       border: 1px solid var(--envelope-dark);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding: 24px;
-      transform-style: preserve-3d;
-      animation: floatEnvelope 3s ease-in-out infinite alternate;
     }
 
-    @keyframes floatEnvelope {
-      0% { transform: translateY(0px); }
-      100% { transform: translateY(-8px); }
-    }
-
-    /* Solapa triangular */
+    /* Solapa triangular superior */
     .envelope-flap {
       position: absolute;
       top: 0;
       left: 0;
       width: 0;
       height: 0;
-      border-left: 220px solid transparent;
-      border-right: 220px solid transparent;
-      border-top: 140px solid var(--envelope-dark);
+      border-left: 210px solid transparent;
+      border-right: 210px solid transparent;
+      border-top: 135px solid var(--envelope-dark);
       transform-origin: top;
-      transition: transform 0.8s ease;
-      z-index: 5;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 15;
     }
 
-    @media (max-width: 460px) {
+    @media (max-width: 440px) {
+      .envelope-wrapper {
+        height: 250px;
+      }
       .envelope-flap {
-        border-left-width: 46vw;
-        border-right-width: 46vw;
+        border-left-width: 45vw;
+        border-right-width: 45vw;
+        border-top-width: 125px;
       }
     }
 
-    .envelope-header {
-      width: 100%;
-      text-align: right;
-      z-index: 6;
+    /* Hoja interior que sale deslizándose */
+    .sliding-letter {
+      position: absolute;
+      width: 88%;
+      height: 85%;
+      left: 6%;
+      top: 8%;
+      background: var(--paper-bg);
+      border: 1px dashed var(--border-vintage);
+      border-radius: 4px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      z-index: 5;
+      transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
     }
 
-    .postage-stamp {
-      display: inline-block;
-      width: 45px;
-      height: 55px;
-      border: 2px dashed #9f8c77;
-      background: #eee3d5;
-      font-size: 9px;
-      font-family: var(--font-clean);
-      color: #7d6b56;
-      line-height: 55px;
-      text-align: center;
-      letter-spacing: 1px;
+    .sliding-letter-line {
+      width: 80%;
+      height: 2px;
+      background: #e4d8c8;
+      margin: 6px 0;
     }
 
-    .envelope-recipient {
-      z-index: 6;
-      text-align: center;
-      margin-top: 25px;
-    }
-
-    .recipient-tag {
-      font-family: var(--font-clean);
-      font-size: 0.75rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: #6d5b4a;
-      display: block;
-      margin-bottom: -5px;
-    }
-
-    .recipient-name {
-      font-family: var(--font-cursive);
-      font-size: 2.8rem;
-      color: #2b1f17;
-      line-height: 1.2;
-    }
-
-    /* Sello de cera para abrir */
+    /* Sello / Botón ABRIR: Exactamente en el centro */
     .wax-seal-btn {
-      z-index: 10;
-      width: 75px;
-      height: 75px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 30;
+      width: 78px;
+      height: 78px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #a83244, var(--wax-red) 70%, var(--wax-shadow));
       color: #fff2f2;
-      border: 2px solid rgba(255,255,255,0.25);
+      border: 2px solid rgba(255,255,255,0.3);
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 20px rgba(92, 20, 32, 0.5), inset 0 2px 4px rgba(255,255,255,0.4);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255,255,255,0.4);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       font-family: var(--font-clean);
       font-size: 0.8rem;
       font-weight: 600;
       letter-spacing: 1px;
       text-transform: uppercase;
-      margin-bottom: -20px;
     }
 
     .wax-seal-btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 10px 25px rgba(92, 20, 32, 0.7);
+      transform: translate(-50%, -50%) scale(1.1);
+      box-shadow: 0 12px 30px rgba(139, 38, 53, 0.8);
     }
 
     .wax-seal-btn span {
-      font-size: 14px;
-      margin-top: 2px;
+      font-size: 13px;
+      margin-top: 1px;
     }
 
-    /* Animación de apertura */
+    /* Texto "PARA: Karina Aguilera" en la parte inferior */
+    .envelope-recipient {
+      position: absolute;
+      bottom: 16px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .recipient-tag {
+      font-family: var(--font-clean);
+      font-size: 0.72rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #6d5b4a;
+      display: block;
+      margin-bottom: -4px;
+      font-weight: 600;
+    }
+
+    .recipient-name {
+      font-family: var(--font-cursive);
+      font-size: 2.8rem;
+      color: #271c15;
+      line-height: 1.1;
+    }
+
+    /* ==============================
+       CLASES DE ANIMACIÓN AL ABRIR
+       ============================== */
+    /* 1. Solapa se abre hacia arriba */
     .envelope-box.opened .envelope-flap {
       transform: rotateX(180deg);
+      z-index: 4;
+    }
+
+    /* 2. El botón desaparece suavemente */
+    .envelope-box.opened .wax-seal-btn {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.6);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+    }
+
+    /* 3. La hoja de la carta sale deslizándose hacia arriba */
+    .envelope-box.opened .sliding-letter {
+      transform: translateY(-135px);
+      z-index: 10;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
     }
 
     /* =========================================
-       2. CONTENEDOR PRINCIPAL / CARTA
+       2. CONTENIDO PRINCIPAL / CARTA COMPLETA
        ========================================= */
     .main-wrapper {
       width: 100%;
@@ -327,7 +361,7 @@
     }
 
     /* =========================================
-       3. VISTA ACEPTADA (CONTADOR + SCROLL FOTOS)
+       3. VISTA ACEPTADA (CONTADOR + SCROLL)
        ========================================= */
     .accepted-view {
       display: none;
@@ -386,7 +420,6 @@
       display: block;
     }
 
-    /* Indicador de scroll */
     .scroll-hint {
       font-family: var(--font-cursive);
       font-size: 2rem;
@@ -401,7 +434,6 @@
       60% { transform: translateY(3px); }
     }
 
-    /* Galería de fotos con scroll */
     .story-gallery {
       margin-top: 30px;
       display: flex;
@@ -442,28 +474,38 @@
 </head>
 <body>
 
-  <!-- 1. PANTALLA SOBRE CERRADO -->
+  <!-- 1. PANTALLA SOBRE CERRADO CON FONDO NEGRO -->
   <div id="envelope-screen">
-    <div class="envelope-box" id="envelope-box">
-      <div class="envelope-flap"></div>
-      
-      <div class="envelope-header">
-        <div class="postage-stamp">AMOR</div>
-      </div>
+    <div class="envelope-wrapper">
+      <div class="envelope-box" id="envelope-box">
+        
+        <!-- Solapa del sobre -->
+        <div class="envelope-flap"></div>
 
-      <div class="envelope-recipient">
-        <span class="recipient-tag">Carta para</span>
-        <h2 class="recipient-name">Karina Aguilera</h2>
-      </div>
+        <!-- Hoja interior que saldrá deslizándose -->
+        <div class="sliding-letter">
+          <div style="font-family: var(--font-cursive); font-size: 1.5rem; color: #7d6b56;">David & Karina</div>
+          <div class="sliding-letter-line"></div>
+          <div class="sliding-letter-line" style="width: 60%;"></div>
+        </div>
 
-      <button class="wax-seal-btn" id="open-envelope-btn">
-        Abrir
-        <span>❦</span>
-      </button>
+        <!-- Botón ABRIR: En el centro exacto -->
+        <button class="wax-seal-btn" id="open-envelope-btn">
+          Abrir
+          <span>❦</span>
+        </button>
+
+        <!-- Destinataria: En la parte inferior -->
+        <div class="envelope-recipient">
+          <span class="recipient-tag">PARA</span>
+          <h2 class="recipient-name">Karina Aguilera</h2>
+        </div>
+
+      </div>
     </div>
   </div>
 
-  <!-- 2. CONTENIDO PRINCIPAL -->
+  <!-- 2. CONTENIDO PRINCIPAL DE LA CARTA -->
   <div class="main-wrapper">
     <div class="envelope-card">
 
@@ -527,10 +569,9 @@
           Nuestra historia continúa hacia abajo ↓
         </div>
 
-        <!-- FOTOS QUE APARECEN CON SCROLL -->
+        <!-- GALERÍA DE FOTOS AL HACER SCROLL -->
         <div class="story-gallery">
 
-          <!-- Foto 1: Oficina / Escritorio -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(-1.8deg);">
               <img src="foto-oficina.jpg" alt="Sonrisas juntos" style="height: 300px; object-position: center 20%;">
@@ -538,7 +579,6 @@
             </div>
           </div>
 
-          <!-- Foto 2: Quincho / Parrilla -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(2deg);">
               <img src="foto-quincho.jpg" alt="Momentos juntos">
@@ -546,7 +586,6 @@
             </div>
           </div>
 
-          <!-- Foto 3: Beso en la mejilla acostados -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(-1.5deg);">
               <img src="foto-cama-beso.jpg" alt="Amor puro">
@@ -554,7 +593,6 @@
             </div>
           </div>
 
-          <!-- Foto 4: Abrazados en la cama -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(1.2deg);">
               <img src="foto-cama-abrazo.jpg" alt="Miradas">
@@ -579,22 +617,24 @@
     const acceptedView = document.getElementById('accepted-view');
     const startDateDisplay = document.getElementById('start-date-display');
 
-    // 1. ABRIR EL SOBRE
+    // 1. ABRIR EL SOBRE: SOLAPA -> SALE LA CARTA -> SE DESCUBRE LA PANTALLA
     openEnvelopeBtn.addEventListener('click', () => {
+      // Abre la solapa y desvanece el botón
       envelopeBox.classList.add('opened');
+
+      // Tras salir la hoja, se disuelve el fondo negro con elegancia
       setTimeout(() => {
         envelopeScreen.style.opacity = '0';
         setTimeout(() => {
           envelopeScreen.style.display = 'none';
         }, 1000);
-      }, 700);
+      }, 1200);
     });
 
     // 2. COMPROBAR SI YA FUE ACEPTADA
     const savedDate = localStorage.getItem('proposal_accepted_vintage');
 
     if (savedDate) {
-      // Si ya aceptó antes, ocultamos el sobre de inmediato
       envelopeScreen.style.display = 'none';
       showAccepted(new Date(savedDate));
     }
@@ -617,7 +657,6 @@
       updateTimer(date);
       setInterval(() => updateTimer(date), 1000);
 
-      // Activar el observador de scroll para las fotos
       initScrollAnimation();
     }
 
@@ -636,7 +675,6 @@
       document.getElementById('seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
     }
 
-    // Efecto de aparición suave de las fotos al hacer scroll
     function initScrollAnimation() {
       const cards = document.querySelectorAll('.story-card');
       const observer = new IntersectionObserver((entries) => {
@@ -650,7 +688,6 @@
       cards.forEach(card => observer.observe(card));
     }
 
-    // Pétalos flotantes
     function triggerPetals() {
       const symbols = ['🥀', '🌹', '✨', '🤍'];
       for (let i = 0; i < 35; i++) {
