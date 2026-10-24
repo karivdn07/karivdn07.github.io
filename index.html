@@ -48,7 +48,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Botón flotante música */
     .music-btn {
       position: fixed;
       top: 15px;
@@ -68,9 +67,6 @@
       transition: all 0.3s ease;
     }
 
-    /* =========================================
-       1. PANTALLA SOBRE (FONDO NEGRO Y ESTRUCTURA)
-       ========================================= */
     #envelope-screen {
       position: fixed;
       inset: 0;
@@ -202,9 +198,6 @@
       line-height: 1.1;
     }
 
-    /* =========================================
-       2. CONTENEDOR PRINCIPAL
-       ========================================= */
     .main-wrapper {
       width: 100%;
       max-width: 500px;
@@ -321,9 +314,6 @@
       gap: 8px;
     }
 
-    /* =========================================
-       3. VISTA ACEPTADA
-       ========================================= */
     .accepted-view {
       display: none;
       animation: fadeIn 1.2s ease forwards;
@@ -421,13 +411,10 @@
 </head>
 <body>
 
-  <!-- ELEMENTO DE AUDIO -->
   <audio id="bg-music" src="musica.mp3" loop preload="auto" playsinline webkit-playsinline></audio>
 
-  <!-- BOTÓN FLOTANTE MÚSICA -->
   <button class="music-btn" id="music-toggle" title="Música">🎵</button>
 
-  <!-- 1. PANTALLA SOBRE -->
   <div id="envelope-screen">
     <div class="envelope">
       <div class="fold-left"></div>
@@ -447,13 +434,10 @@
     </div>
   </div>
 
-  <!-- 2. CONTENIDO PRINCIPAL -->
   <div class="main-wrapper">
     <div class="envelope-card">
 
-      <!-- VISTA 1: La propuesta -->
       <div id="proposal-view">
-        
         <div class="polaroid" style="transform: rotate(-1.5deg);">
           <img id="cover-photo" src="foto-portada.jpg" alt="Nosotros">
         </div>
@@ -471,12 +455,9 @@
         <button class="btn-wax" id="btn-accept">
           <span>Sí, Acepto</span> ❦
         </button>
-
       </div>
 
-      <!-- VISTA 2: El pacto sellado -->
       <div id="accepted-view" class="accepted-view">
-        
         <h2 class="vintage-phrase">Hoy es el primer día de nuestra vida juntos</h2>
         
         <div class="polaroid" style="transform: rotate(1deg);">
@@ -504,37 +485,30 @@
           </div>
         </div>
 
-        <!-- FOTOS CON SCROLL -->
         <div class="story-gallery">
-
-          <!-- FOTO DE LA OFICINA (AJUSTADA A 430px PARA QUE SE VEA COMPLETA) -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(-1.5deg);">
               <img src="foto-oficina.jpg" alt="Foto" style="height: 430px; object-position: center;">
             </div>
           </div>
 
-          <!-- FOTO QUINCHO -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(1.8deg);">
               <img src="foto-quincho.jpg" alt="Foto">
             </div>
           </div>
 
-          <!-- FOTO CAMA BESO -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(-1.2deg);">
               <img src="foto-cama-beso.jpg" alt="Foto">
             </div>
           </div>
 
-          <!-- FOTO CAMA ABRAZO -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(1.5deg);">
               <img src="foto-cama-abrazo.jpg" alt="Foto">
             </div>
           </div>
-
         </div>
 
       </div>
@@ -543,27 +517,102 @@
   </div>
 
   <script>
+    // ==============================================================
+    // CONFIGURA AQUÍ TU URL DE FIREBASE (terminada en /):
+    // Ejemplo: "https://propuesta-karina-default-rtdb.firebaseio.com/"
+    // ==============================================================
+    const FIREBASE_URL = "https://propuesta-karina-default-rtdb.firebaseio.com/";
+
     const envelopeScreen = document.getElementById('envelope-screen');
     const openEnvelopeBtn = document.getElementById('open-envelope-btn');
-
     const btnAccept = document.getElementById('btn-accept');
     const proposalView = document.getElementById('proposal-view');
     const acceptedView = document.getElementById('accepted-view');
     const startDateDisplay = document.getElementById('start-date-display');
-
     const bgMusic = document.getElementById('bg-music');
     const musicToggle = document.getElementById('music-toggle');
 
     let isPlaying = false;
+    let currentIP = "desconocida";
+    let deviceKey = "";
 
+    // Obtener información del dispositivo (iPhone, Android, PC...)
+    function getDeviceName() {
+      const ua = navigator.userAgent;
+      if (/iPhone/.test(ua)) return "iPhone";
+      if (/iPad/.test(ua)) return "iPad";
+      if (/Android/.test(ua)) return "Android";
+      if (/Windows/.test(ua)) return "Windows PC";
+      if (/Macintosh/.test(ua)) return "Mac";
+      return "Dispositivo Móvil/PC";
+    }
+
+    // Identificador único por navegador
+    let localDeviceId = localStorage.getItem('unique_device_token');
+    if (!localDeviceId) {
+      localDeviceId = 'dev_' + Math.random().toString(36).substring(2, 9);
+      localStorage.setItem('unique_device_token', localDeviceId);
+    }
+
+    // REGISTRO EN LA BASE DE DATOS Y COMPROBACIÓN
+    async function initDeviceTracking() {
+      try {
+        // Obtener IP pública real
+        const ipRes = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipRes.json();
+        currentIP = ipData.ip;
+      } catch (e) {
+        currentIP = "ip_oculta";
+      }
+
+      // Clave segura para la base de datos (reemplaza puntos de la IP)
+      const safeIP = currentIP.replace(/\./g, '_');
+      deviceKey = `${getDeviceName()}_${safeIP}_${localDeviceId}`;
+
+      // Consultar si este dispositivo ya tiene un registro
+      try {
+        const checkRes = await fetch(`${FIREBASE_URL}dispositivos/${deviceKey}.json`);
+        const data = await checkRes.json();
+
+        if (data) {
+          // Si tú desde Firebase pusiste el estado en "reinicio", se borra y vuelve al sobre
+          if (data.estado === "reinicio") {
+            localStorage.removeItem('proposal_accepted_vintage');
+            return;
+          }
+
+          // Si ya había aceptado previamente, mostramos el contador directamente
+          if (data.fechaAceptado) {
+            envelopeScreen.style.display = 'none';
+            showAccepted(new Date(data.fechaAceptado));
+          }
+        } else {
+          // Si es la primera vez que entra, lo registramos como "visita"
+          fetch(`${FIREBASE_URL}dispositivos/${deviceKey}.json`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+              ip: currentIP,
+              dispositivo: navigator.userAgent,
+              tipo: getDeviceName(),
+              primeraVisita: new Date().toISOString(),
+              estado: "esperando_respuesta"
+            })
+          });
+        }
+      } catch (err) {
+        console.log("Modo offline / local storage:", err);
+      }
+    }
+
+    initDeviceTracking();
+
+    // Reproducción de audio Safari/iOS
     function playAudioSafari() {
       if (!isPlaying) {
         bgMusic.play().then(() => {
           isPlaying = true;
           musicToggle.textContent = '🎵';
-        }).catch(err => {
-          console.log("Esperando toque de usuario para Safari:", err);
-        });
+        }).catch(() => {});
       }
     }
 
@@ -581,9 +630,7 @@
     });
 
     ['touchstart', 'click'].forEach(evt => {
-      openEnvelopeBtn.addEventListener(evt, () => {
-        playAudioSafari();
-      }, { once: false, passive: true });
+      openEnvelopeBtn.addEventListener(evt, playAudioSafari, { once: false, passive: true });
     });
 
     // 1. ABRIR SOBRE
@@ -594,19 +641,32 @@
       }, 800);
     });
 
-    // 2. COMPROBAR SI YA FUE ACEPTADA
+    // Comprobación secundaria en localStorage
     const savedDate = localStorage.getItem('proposal_accepted_vintage');
-
     if (savedDate) {
       envelopeScreen.style.display = 'none';
       showAccepted(new Date(savedDate));
     }
 
-    // 3. CLIC EN "SÍ, ACEPTO"
+    // 2. CLIC EN "SÍ, ACEPTO"
     btnAccept.addEventListener('click', () => {
       playAudioSafari();
       const now = new Date();
       localStorage.setItem('proposal_accepted_vintage', now.toISOString());
+
+      // Guardar en la base de datos de Firebase para siempre
+      if (deviceKey) {
+        fetch(`${FIREBASE_URL}dispositivos/${deviceKey}.json`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            ip: currentIP,
+            tipo: getDeviceName(),
+            fechaAceptado: now.toISOString(),
+            estado: "aceptado"
+          })
+        });
+      }
+
       triggerPetals();
       showAccepted(now);
     });
