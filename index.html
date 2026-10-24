@@ -14,9 +14,9 @@
     :root {
       --bg-color: #e8dfd1;
       --paper-bg: #faf6ee;
-      --envelope-color: #d6c4ae;
-      --envelope-dark: #bfa88f;
-      --envelope-inside: #a89279;
+      --envelope-base: #d2c1aa;
+      --envelope-dark: #bfa990;
+      --envelope-shadow: rgba(40, 28, 18, 0.25);
       --ink-color: #2b2118;
       --ink-light: #5a4a3a;
       --border-vintage: #c5b49d;
@@ -49,111 +49,105 @@
     }
 
     /* =========================================
-       1. PANTALLA SOBRE: FONDO NEGRO Y ANIMACIÓN
+       1. PANTALLA SOBRE (FONDO NEGRO Y ESTRUCTURA REAL)
        ========================================= */
     #envelope-screen {
       position: fixed;
       inset: 0;
-      background-color: #0c0b0a; /* Fondo totalmente negro */
+      background-color: #000000;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s ease;
-      padding: 20px;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+      padding: 16px;
     }
 
-    .envelope-wrapper {
+    .envelope {
       position: relative;
       width: 100%;
-      max-width: 420px;
-      height: 270px;
-      perspective: 1000px;
+      max-width: 440px;
+      height: 280px;
+      background: var(--envelope-base);
+      border-radius: 4px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
+      overflow: hidden;
+      border: 1px solid #aa957d;
     }
 
-    .envelope-box {
-      width: 100%;
-      height: 100%;
-      background: var(--envelope-color);
-      border-radius: 6px;
-      position: relative;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
-      border: 1px solid var(--envelope-dark);
-    }
-
-    /* Solapa triangular superior */
-    .envelope-flap {
+    /* Pliegues realistas del sobre mediante clip-path */
+    /* Pliegue izquierdo */
+    .fold-left {
       position: absolute;
       top: 0;
       left: 0;
-      width: 0;
-      height: 0;
-      border-left: 210px solid transparent;
-      border-right: 210px solid transparent;
-      border-top: 135px solid var(--envelope-dark);
-      transform-origin: top;
-      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 15;
+      width: 100%;
+      height: 100%;
+      background: #cbb9a1;
+      clip-path: polygon(0 0, 50% 50%, 0 100%);
+      box-shadow: 2px 0 8px var(--envelope-shadow);
+      z-index: 2;
     }
 
-    @media (max-width: 440px) {
-      .envelope-wrapper {
-        height: 250px;
-      }
-      .envelope-flap {
-        border-left-width: 45vw;
-        border-right-width: 45vw;
-        border-top-width: 125px;
-      }
-    }
-
-    /* Hoja interior que sale deslizándose */
-    .sliding-letter {
+    /* Pliegue derecho */
+    .fold-right {
       position: absolute;
-      width: 88%;
-      height: 85%;
-      left: 6%;
-      top: 8%;
-      background: var(--paper-bg);
-      border: 1px dashed var(--border-vintage);
-      border-radius: 4px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      z-index: 5;
-      transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      background: #c4b198;
+      clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+      box-shadow: -2px 0 8px var(--envelope-shadow);
+      z-index: 2;
     }
 
-    .sliding-letter-line {
-      width: 80%;
-      height: 2px;
-      background: #e4d8c8;
-      margin: 6px 0;
+    /* Pliegue inferior */
+    .fold-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #dfcfba;
+      clip-path: polygon(0 100%, 50% 48%, 100% 100%);
+      box-shadow: 0 -3px 10px var(--envelope-shadow);
+      z-index: 3;
     }
 
-    /* Sello / Botón ABRIR: Exactamente en el centro */
+    /* Solapa triangular superior */
+    .fold-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #bfa98f;
+      clip-path: polygon(0 0, 50% 52%, 100% 0);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      z-index: 4;
+    }
+
+    /* Sello / Botón ABRIR (Centrado exactamente) */
     .wax-seal-btn {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 30;
-      width: 78px;
-      height: 78px;
+      z-index: 20;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #a83244, var(--wax-red) 70%, var(--wax-shadow));
       color: #fff2f2;
-      border: 2px solid rgba(255,255,255,0.3);
+      border: 2px solid rgba(255, 255, 255, 0.3);
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255,255,255,0.4);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
       font-family: var(--font-clean);
       font-size: 0.8rem;
       font-weight: 600;
@@ -162,8 +156,8 @@
     }
 
     .wax-seal-btn:hover {
-      transform: translate(-50%, -50%) scale(1.1);
-      box-shadow: 0 12px 30px rgba(139, 38, 53, 0.8);
+      transform: translate(-50%, -50%) scale(1.08);
+      box-shadow: 0 12px 28px rgba(139, 38, 53, 0.8);
     }
 
     .wax-seal-btn span {
@@ -171,14 +165,14 @@
       margin-top: 1px;
     }
 
-    /* Texto "PARA: Karina Aguilera" en la parte inferior */
+    /* Destinataria: Parte inferior del sobre */
     .envelope-recipient {
       position: absolute;
-      bottom: 16px;
+      bottom: 12px;
       left: 0;
       right: 0;
       text-align: center;
-      z-index: 20;
+      z-index: 10;
       pointer-events: none;
     }
 
@@ -187,45 +181,21 @@
       font-size: 0.72rem;
       letter-spacing: 4px;
       text-transform: uppercase;
-      color: #6d5b4a;
+      color: #63503e;
       display: block;
-      margin-bottom: -4px;
+      margin-bottom: -5px;
       font-weight: 600;
     }
 
     .recipient-name {
       font-family: var(--font-cursive);
-      font-size: 2.8rem;
+      font-size: 2.7rem;
       color: #271c15;
       line-height: 1.1;
     }
 
-    /* ==============================
-       CLASES DE ANIMACIÓN AL ABRIR
-       ============================== */
-    /* 1. Solapa se abre hacia arriba */
-    .envelope-box.opened .envelope-flap {
-      transform: rotateX(180deg);
-      z-index: 4;
-    }
-
-    /* 2. El botón desaparece suavemente */
-    .envelope-box.opened .wax-seal-btn {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(0.6);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      pointer-events: none;
-    }
-
-    /* 3. La hoja de la carta sale deslizándose hacia arriba */
-    .envelope-box.opened .sliding-letter {
-      transform: translateY(-135px);
-      z-index: 10;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-    }
-
     /* =========================================
-       2. CONTENIDO PRINCIPAL / CARTA COMPLETA
+       2. CONTENEDOR PRINCIPAL / CARTA
        ========================================= */
     .main-wrapper {
       width: 100%;
@@ -255,22 +225,20 @@
       pointer-events: none;
     }
 
-    /* Fotos Polaroid */
+    /* Fotos Polaroid limpias sin textos */
     .polaroid {
       background: #ffffff;
-      padding: 12px 12px 28px 12px;
+      padding: 12px 12px 22px 12px;
       box-shadow: 0 8px 22px rgba(0,0,0,0.12);
       border: 1px solid #e2dad0;
       display: inline-block;
       width: 100%;
-      margin: 15px auto 25px auto;
+      margin: 12px auto;
       transition: transform 0.4s ease;
-      position: relative;
     }
 
     .polaroid:hover {
       transform: scale(1.02) rotate(0deg) !important;
-      z-index: 5;
     }
 
     .polaroid img {
@@ -278,15 +246,7 @@
       height: 250px;
       object-fit: cover;
       display: block;
-      filter: sepia(10%) contrast(96%);
-    }
-
-    .polaroid-caption {
-      font-family: var(--font-cursive);
-      font-size: 1.8rem;
-      color: #3f3126;
-      margin-top: 10px;
-      line-height: 1.1;
+      filter: sepia(8%) contrast(96%);
     }
 
     h1.names {
@@ -361,11 +321,11 @@
     }
 
     /* =========================================
-       3. VISTA ACEPTADA (CONTADOR + SCROLL)
+       3. VISTA ACEPTADA (ORDEN SOLICITADO)
        ========================================= */
     .accepted-view {
       display: none;
-      animation: fadeIn 1.5s ease forwards;
+      animation: fadeIn 1.2s ease forwards;
     }
 
     .vintage-phrase {
@@ -376,22 +336,24 @@
       margin-bottom: 12px;
     }
 
+    /* Fecha limpia: solo fecha, año y hora */
     .date-badge {
       font-family: var(--font-serif);
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-style: italic;
       color: var(--gold-accent);
       border-top: 1px solid var(--border-vintage);
       border-bottom: 1px solid var(--border-vintage);
       padding: 8px 0;
-      margin: 15px 0 20px 0;
+      margin: 18px 0 15px 0;
+      letter-spacing: 0.5px;
     }
 
     .counter-wrap {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
-      margin: 22px 0 30px 0;
+      margin: 15px 0 35px 0;
     }
 
     .counter-box {
@@ -420,30 +382,16 @@
       display: block;
     }
 
-    .scroll-hint {
-      font-family: var(--font-cursive);
-      font-size: 2rem;
-      color: var(--gold-accent);
-      margin: 25px 0 10px 0;
-      animation: bounce 2s infinite;
-    }
-
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-      40% { transform: translateY(6px); }
-      60% { transform: translateY(3px); }
-    }
-
+    /* Galería limpia sin textos */
     .story-gallery {
-      margin-top: 30px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 15px;
     }
 
     .story-card {
       opacity: 0;
-      transform: translateY(30px);
+      transform: translateY(25px);
       transition: all 0.8s ease-out;
     }
 
@@ -474,38 +422,30 @@
 </head>
 <body>
 
-  <!-- 1. PANTALLA SOBRE CERRADO CON FONDO NEGRO -->
+  <!-- 1. PANTALLA SOBRE REALISTA (FONDO NEGRO) -->
   <div id="envelope-screen">
-    <div class="envelope-wrapper">
-      <div class="envelope-box" id="envelope-box">
-        
-        <!-- Solapa del sobre -->
-        <div class="envelope-flap"></div>
+    <div class="envelope">
+      <!-- Pliegues físicos del sobre -->
+      <div class="fold-left"></div>
+      <div class="fold-right"></div>
+      <div class="fold-bottom"></div>
+      <div class="fold-top"></div>
 
-        <!-- Hoja interior que saldrá deslizándose -->
-        <div class="sliding-letter">
-          <div style="font-family: var(--font-cursive); font-size: 1.5rem; color: #7d6b56;">David & Karina</div>
-          <div class="sliding-letter-line"></div>
-          <div class="sliding-letter-line" style="width: 60%;"></div>
-        </div>
+      <!-- Botón en el centro mismo -->
+      <button class="wax-seal-btn" id="open-envelope-btn">
+        Abrir
+        <span>❦</span>
+      </button>
 
-        <!-- Botón ABRIR: En el centro exacto -->
-        <button class="wax-seal-btn" id="open-envelope-btn">
-          Abrir
-          <span>❦</span>
-        </button>
-
-        <!-- Destinataria: En la parte inferior -->
-        <div class="envelope-recipient">
-          <span class="recipient-tag">PARA</span>
-          <h2 class="recipient-name">Karina Aguilera</h2>
-        </div>
-
+      <!-- Texto PARA en la parte inferior -->
+      <div class="envelope-recipient">
+        <span class="recipient-tag">PARA</span>
+        <h2 class="recipient-name">Karina Aguilera</h2>
       </div>
     </div>
   </div>
 
-  <!-- 2. CONTENIDO PRINCIPAL DE LA CARTA -->
+  <!-- 2. CONTENIDO PRINCIPAL -->
   <div class="main-wrapper">
     <div class="envelope-card">
 
@@ -532,20 +472,20 @@
 
       </div>
 
-      <!-- VISTA 2: El pacto sellado y Álbum en Scroll -->
+      <!-- VISTA 2: El pacto sellado y Galería limpia -->
       <div id="accepted-view" class="accepted-view">
         
         <h2 class="vintage-phrase">Hoy es el primer día de nuestra vida juntos</h2>
         
-        <!-- Foto principal del beso -->
+        <!-- 1ra Foto: Foto del beso (limpia) -->
         <div class="polaroid" style="transform: rotate(1deg);">
           <img src="foto-beso.jpg" alt="Nuestro Beso" style="height: 310px; object-position: center 40%;">
-          <div class="polaroid-caption">Sellado para la eternidad...</div>
         </div>
 
-        <div class="date-badge" id="start-date-display">Cargando fecha...</div>
+        <!-- Solo fecha, año y hora -->
+        <div class="date-badge" id="start-date-display">Cargando...</div>
 
-        <!-- Contador -->
+        <!-- Contador debajo de la fecha -->
         <div class="counter-wrap">
           <div class="counter-box">
             <span class="num" id="days">0</span>
@@ -565,38 +505,30 @@
           </div>
         </div>
 
-        <div class="scroll-hint">
-          Nuestra historia continúa hacia abajo ↓
-        </div>
-
-        <!-- GALERÍA DE FOTOS AL HACER SCROLL -->
+        <!-- FOTOS QUE APARECEN CON SCROLL (TODAS LIMPIAS) -->
         <div class="story-gallery">
 
           <div class="story-card">
-            <div class="polaroid" style="transform: rotate(-1.8deg);">
-              <img src="foto-oficina.jpg" alt="Sonrisas juntos" style="height: 300px; object-position: center 20%;">
-              <div class="polaroid-caption">Tu sonrisa, mi luz de cada día</div>
-            </div>
-          </div>
-
-          <div class="story-card">
-            <div class="polaroid" style="transform: rotate(2deg);">
-              <img src="foto-quincho.jpg" alt="Momentos juntos">
-              <div class="polaroid-caption">En tus brazos es mi lugar favorito</div>
-            </div>
-          </div>
-
-          <div class="story-card">
             <div class="polaroid" style="transform: rotate(-1.5deg);">
-              <img src="foto-cama-beso.jpg" alt="Amor puro">
-              <div class="polaroid-caption">Llenarte de besos siempre</div>
+              <img src="foto-oficina.jpg" alt="Foto" style="height: 300px; object-position: center 20%;">
             </div>
           </div>
 
           <div class="story-card">
-            <div class="polaroid" style="transform: rotate(1.2deg);">
-              <img src="foto-cama-abrazo.jpg" alt="Miradas">
-              <div class="polaroid-caption">Tú y yo, contra el mundo</div>
+            <div class="polaroid" style="transform: rotate(1.8deg);">
+              <img src="foto-quincho.jpg" alt="Foto">
+            </div>
+          </div>
+
+          <div class="story-card">
+            <div class="polaroid" style="transform: rotate(-1.2deg);">
+              <img src="foto-cama-beso.jpg" alt="Foto">
+            </div>
+          </div>
+
+          <div class="story-card">
+            <div class="polaroid" style="transform: rotate(1.5deg);">
+              <img src="foto-cama-abrazo.jpg" alt="Foto">
             </div>
           </div>
 
@@ -609,7 +541,6 @@
 
   <script>
     const envelopeScreen = document.getElementById('envelope-screen');
-    const envelopeBox = document.getElementById('envelope-box');
     const openEnvelopeBtn = document.getElementById('open-envelope-btn');
 
     const btnAccept = document.getElementById('btn-accept');
@@ -617,18 +548,12 @@
     const acceptedView = document.getElementById('accepted-view');
     const startDateDisplay = document.getElementById('start-date-display');
 
-    // 1. ABRIR EL SOBRE: SOLAPA -> SALE LA CARTA -> SE DESCUBRE LA PANTALLA
+    // 1. ABRIR EL SOBRE (Desvanecimiento directo al dar clic)
     openEnvelopeBtn.addEventListener('click', () => {
-      // Abre la solapa y desvanece el botón
-      envelopeBox.classList.add('opened');
-
-      // Tras salir la hoja, se disuelve el fondo negro con elegancia
+      envelopeScreen.style.opacity = '0';
       setTimeout(() => {
-        envelopeScreen.style.opacity = '0';
-        setTimeout(() => {
-          envelopeScreen.style.display = 'none';
-        }, 1000);
-      }, 1200);
+        envelopeScreen.style.display = 'none';
+      }, 800);
     });
 
     // 2. COMPROBAR SI YA FUE ACEPTADA
@@ -651,8 +576,10 @@
       proposalView.style.display = 'none';
       acceptedView.style.display = 'block';
 
-      const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
-      startDateDisplay.textContent = "Sellado para siempre el " + date.toLocaleDateString('es-ES', options);
+      // Formato limpio: solo fecha, año y hora
+      const dateStr = date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+      const timeStr = date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      startDateDisplay.textContent = `${dateStr} · ${timeStr} hs`;
 
       updateTimer(date);
       setInterval(() => updateTimer(date), 1000);
