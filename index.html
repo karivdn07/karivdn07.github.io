@@ -244,6 +244,10 @@
       transition: transform 0.4s ease;
     }
 
+    .polaroid:hover {
+      transform: scale(1.02) rotate(0deg) !important;
+    }
+
     .polaroid img {
       width: 100%;
       height: 250px;
@@ -417,7 +421,7 @@
 </head>
 <body>
 
-  <!-- ELEMENTO DE AUDIO (Compatibilidad Apple Safari) -->
+  <!-- ELEMENTO DE AUDIO -->
   <audio id="bg-music" src="musica.mp3" loop preload="auto" playsinline webkit-playsinline></audio>
 
   <!-- BOTÓN FLOTANTE MÚSICA -->
@@ -503,24 +507,28 @@
         <!-- FOTOS CON SCROLL -->
         <div class="story-gallery">
 
+          <!-- FOTO DE LA OFICINA (AJUSTADA A 430px PARA QUE SE VEA COMPLETA) -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(-1.5deg);">
-              <img src="foto-oficina.jpg" alt="Foto" style="height: 300px; object-position: center 20%;">
+              <img src="foto-oficina.jpg" alt="Foto" style="height: 430px; object-position: center;">
             </div>
           </div>
 
+          <!-- FOTO QUINCHO -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(1.8deg);">
               <img src="foto-quincho.jpg" alt="Foto">
             </div>
           </div>
 
+          <!-- FOTO CAMA BESO -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(-1.2deg);">
               <img src="foto-cama-beso.jpg" alt="Foto">
             </div>
           </div>
 
+          <!-- FOTO CAMA ABRAZO -->
           <div class="story-card">
             <div class="polaroid" style="transform: rotate(1.5deg);">
               <img src="foto-cama-abrazo.jpg" alt="Foto">
@@ -548,7 +556,6 @@
 
     let isPlaying = false;
 
-    // Función segura para reproducir audio en iOS/Safari
     function playAudioSafari() {
       if (!isPlaying) {
         bgMusic.play().then(() => {
@@ -560,7 +567,6 @@
       }
     }
 
-    // Botón flotante para pausar/reanudar
     musicToggle.addEventListener('click', (e) => {
       e.stopPropagation();
       if (bgMusic.paused) {
@@ -574,7 +580,6 @@
       }
     });
 
-    // Desbloquear audio con toque inmediato (Requisito de Safari / iOS)
     ['touchstart', 'click'].forEach(evt => {
       openEnvelopeBtn.addEventListener(evt, () => {
         playAudioSafari();
@@ -599,7 +604,7 @@
 
     // 3. CLIC EN "SÍ, ACEPTO"
     btnAccept.addEventListener('click', () => {
-      playAudioSafari(); // Si Safari lo tenía bloqueado, lo activa aquí
+      playAudioSafari();
       const now = new Date();
       localStorage.setItem('proposal_accepted_vintage', now.toISOString());
       triggerPetals();
