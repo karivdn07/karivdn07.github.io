@@ -67,7 +67,7 @@
       pointer-events: none;
     }
 
-    /* Polaroid adaptada para fotos horizontales */
+    /* Polaroid */
     .polaroid {
       background: #ffffff;
       padding: 12px 12px 26px 12px;
@@ -88,9 +88,15 @@
       width: 100%;
       height: 230px;
       object-fit: cover;
-      object-position: center 25%; /* Asegura que sus caras salgan perfectas */
+      object-position: center 25%;
       display: block;
       filter: sepia(12%) contrast(96%);
+    }
+
+    /* Ajuste especial para la 2da foto (vertical del beso) */
+    #second-photo {
+      height: 310px;
+      object-position: center 40%;
     }
 
     h1.names {
@@ -248,26 +254,26 @@
     <!-- VISTA 1: La propuesta -->
     <div id="proposal-view">
       
-      <!-- 1. Vuestra foto en Polaroid -->
+      <!-- 1. Vuestra foto de portada -->
       <div class="polaroid">
         <img id="cover-photo" src="foto-portada.jpg" alt="Nosotros">
       </div>
 
       <!-- 2. Nombres -->
-      <h1 class="names">Lucas & Sofía</h1>
+      <h1 class="names">David & Karina</h1>
       <div class="divider"></div>
 
       <!-- 3. Carta manuscrita -->
       <div class="letter-body">
         "Dicen que los mejores momentos de la vida llegan sin avisar, y así fue como llegaste tú a mis días. Cada instante compartido contigo se ha convertido en mi recuerdo favorito y en la razón más bonita para soñar con el futuro.
         <br><br>
-        Por eso hoy, con el corazón en la mano, quiero hacerte una promesa y una pregunta..."
+        Por eso hoy, con el corazón en la mano, quiero hacerte una pregunta..."
       </div>
 
       <!-- 4. La Pregunta y el Botón de Lacre -->
-      <div class="question">¿Quieres ser mi novia?</div>
+      <div class="question">¿Me aceptas ser tu novio?</div>
       <button class="btn-wax" id="btn-accept">
-        <span>Sí, Quiero</span> ❦
+        <span>Sí, Acepto</span> ❦
       </button>
 
     </div>
@@ -275,11 +281,11 @@
     <!-- VISTA 2: El pacto sellado y contador -->
     <div id="accepted-view" class="accepted-view">
       
-      <h2 class="vintage-phrase">Hoy es el primer día de nuestra vida</h2>
+      <h2 class="vintage-phrase">Hoy es el primer día de nuestra vida juntos</h2>
       
-      <!-- 2da Foto Polaroid (puedes guardarla como foto2.jpg) -->
+      <!-- 2da Foto Polaroid (La foto del beso) -->
       <div class="polaroid" style="transform: rotate(1.5deg);">
-        <img id="second-photo" src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800&auto=format&fit=crop" alt="Nuestro Momento">
+        <img id="second-photo" src="foto-beso.jpg" alt="Nuestro Beso">
       </div>
 
       <div class="date-badge" id="start-date-display">Cargando fecha...</div>
