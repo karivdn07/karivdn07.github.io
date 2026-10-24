@@ -45,35 +45,31 @@
       padding: 20px 12px 60px 12px;
       min-height: 100vh;
       overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    /* Botón flotante para pausar/reanudar música */
+    /* Botón flotante música */
     .music-btn {
       position: fixed;
       top: 15px;
       right: 15px;
-      background: rgba(250, 246, 238, 0.85);
+      background: rgba(250, 246, 238, 0.9);
       border: 1px solid var(--border-vintage);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       z-index: 100;
-      font-size: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       transition: all 0.3s ease;
     }
 
-    .music-btn:hover {
-      transform: scale(1.08);
-      background: #faf6ee;
-    }
-
     /* =========================================
-       1. PANTALLA SOBRE (FONDO NEGRO Y ESTRUCTURA REAL)
+       1. PANTALLA SOBRE (FONDO NEGRO Y ESTRUCTURA)
        ========================================= */
     #envelope-screen {
       position: fixed;
@@ -147,7 +143,6 @@
       z-index: 4;
     }
 
-    /* Sello / Botón ABRIR */
     .wax-seal-btn {
       position: absolute;
       top: 50%;
@@ -166,17 +161,12 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.4);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
       font-family: var(--font-clean);
       font-size: 0.8rem;
       font-weight: 600;
       letter-spacing: 1px;
       text-transform: uppercase;
-    }
-
-    .wax-seal-btn:hover {
-      transform: translate(-50%, -50%) scale(1.08);
-      box-shadow: 0 12px 28px rgba(139, 38, 53, 0.8);
+      user-select: none;
     }
 
     .wax-seal-btn span {
@@ -213,7 +203,7 @@
     }
 
     /* =========================================
-       2. CONTENEDOR PRINCIPAL / CARTA
+       2. CONTENEDOR PRINCIPAL
        ========================================= */
     .main-wrapper {
       width: 100%;
@@ -252,10 +242,6 @@
       width: 100%;
       margin: 12px auto;
       transition: transform 0.4s ease;
-    }
-
-    .polaroid:hover {
-      transform: scale(1.02) rotate(0deg) !important;
     }
 
     .polaroid img {
@@ -326,15 +312,9 @@
       border-radius: 50px;
       cursor: pointer;
       box-shadow: 0 6px 16px rgba(92, 20, 32, 0.35), inset 0 2px 4px rgba(255,255,255,0.3);
-      transition: all 0.3s ease;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-    }
-
-    .btn-wax:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 10px 22px rgba(92, 20, 32, 0.45);
     }
 
     /* =========================================
@@ -437,13 +417,13 @@
 </head>
 <body>
 
-  <!-- ELEMENTO DE AUDIO -->
-  <audio id="bg-music" src="musica.mp3" loop preload="auto"></audio>
+  <!-- ELEMENTO DE AUDIO (Compatibilidad Apple Safari) -->
+  <audio id="bg-music" src="musica.mp3" loop preload="auto" playsinline webkit-playsinline></audio>
 
-  <!-- BOTÓN FLOTANTE PARA PAUSAR / REANUDAR -->
+  <!-- BOTÓN FLOTANTE MÚSICA -->
   <button class="music-btn" id="music-toggle" title="Música">🎵</button>
 
-  <!-- 1. PANTALLA SOBRE (FONDO NEGRO) -->
+  <!-- 1. PANTALLA SOBRE -->
   <div id="envelope-screen">
     <div class="envelope">
       <div class="fold-left"></div>
@@ -451,7 +431,6 @@
       <div class="fold-bottom"></div>
       <div class="fold-top"></div>
 
-      <!-- Al dar clic aquí empieza a sonar la música -->
       <button class="wax-seal-btn" id="open-envelope-btn">
         Abrir
         <span>❦</span>
@@ -491,20 +470,17 @@
 
       </div>
 
-      <!-- VISTA 2: El pacto sellado y Galería limpia -->
+      <!-- VISTA 2: El pacto sellado -->
       <div id="accepted-view" class="accepted-view">
         
         <h2 class="vintage-phrase">Hoy es el primer día de nuestra vida juntos</h2>
         
-        <!-- Foto principal del beso -->
         <div class="polaroid" style="transform: rotate(1deg);">
           <img src="foto-beso.jpg" alt="Nuestro Beso" style="height: 310px; object-position: center 40%;">
         </div>
 
-        <!-- Solo fecha, año y hora -->
         <div class="date-badge" id="start-date-display">Cargando...</div>
 
-        <!-- Contador debajo de la fecha -->
         <div class="counter-wrap">
           <div class="counter-box">
             <span class="num" id="days">0</span>
@@ -524,7 +500,7 @@
           </div>
         </div>
 
-        <!-- FOTOS CON SCROLL (LIMPIAS) -->
+        <!-- FOTOS CON SCROLL -->
         <div class="story-gallery">
 
           <div class="story-card">
@@ -570,22 +546,43 @@
     const bgMusic = document.getElementById('bg-music');
     const musicToggle = document.getElementById('music-toggle');
 
-    // CONTROL DE MÚSICA (Botón flotante)
-    musicToggle.addEventListener('click', () => {
+    let isPlaying = false;
+
+    // Función segura para reproducir audio en iOS/Safari
+    function playAudioSafari() {
+      if (!isPlaying) {
+        bgMusic.play().then(() => {
+          isPlaying = true;
+          musicToggle.textContent = '🎵';
+        }).catch(err => {
+          console.log("Esperando toque de usuario para Safari:", err);
+        });
+      }
+    }
+
+    // Botón flotante para pausar/reanudar
+    musicToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
       if (bgMusic.paused) {
         bgMusic.play();
         musicToggle.textContent = '🎵';
+        isPlaying = true;
       } else {
         bgMusic.pause();
         musicToggle.textContent = '🔇';
+        isPlaying = false;
       }
     });
 
-    // 1. ABRIR SOBRE + INICIAR MÚSICA
-    openEnvelopeBtn.addEventListener('click', () => {
-      // Iniciar la música de inmediato con la interacción del usuario
-      bgMusic.play().catch(e => console.log('Esperando interacción para audio:', e));
+    // Desbloquear audio con toque inmediato (Requisito de Safari / iOS)
+    ['touchstart', 'click'].forEach(evt => {
+      openEnvelopeBtn.addEventListener(evt, () => {
+        playAudioSafari();
+      }, { once: false, passive: true });
+    });
 
+    // 1. ABRIR SOBRE
+    openEnvelopeBtn.addEventListener('click', () => {
       envelopeScreen.style.opacity = '0';
       setTimeout(() => {
         envelopeScreen.style.display = 'none';
@@ -602,6 +599,7 @@
 
     // 3. CLIC EN "SÍ, ACEPTO"
     btnAccept.addEventListener('click', () => {
+      playAudioSafari(); // Si Safari lo tenía bloqueado, lo activa aquí
       const now = new Date();
       localStorage.setItem('proposal_accepted_vintage', now.toISOString());
       triggerPetals();
